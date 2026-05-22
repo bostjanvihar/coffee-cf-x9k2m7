@@ -734,6 +734,7 @@ async function createUser() {
     state.users.push(newUser);
     localStorage.setItem('ct_users', JSON.stringify(state.users));
     state.currentUser = newUser;
+    state.pinBuffer = state.newPinBuffer;
     state.newPinBuffer = '';
     document.getElementById('new-name').value = '';
     updatePinDots('ndot', '');
