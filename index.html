@@ -596,12 +596,23 @@ let state = {
 
 // ── Init ─────────────────────────────────────────────────────
 async function init() {
+  // Load from localStorage immediately so the app feels instant on repeat visits
+  try {
+    const cachedUsers    = localStorage.getItem('ct_users');
+    const cachedSettings = localStorage.getItem('ct_settings');
+    if (cachedUsers)    state.users    = JSON.parse(cachedUsers);
+    if (cachedSettings) state.settings = JSON.parse(cachedSettings);
+  } catch(e) {}
+
+  // Refresh from server in the background
   try {
     const [users, settings] = await Promise.all([api('getUsers'), api('getSettings')]);
-    state.users = users;
+    state.users    = users;
     state.settings = settings;
+    localStorage.setItem('ct_users',    JSON.stringify(users));
+    localStorage.setItem('ct_settings', JSON.stringify(settings));
   } catch(e) {
-    showToast('Could not connect to server');
+    if (!state.users.length) showToast('Could not connect to server');
   }
 }
 
@@ -721,6 +732,7 @@ async function createUser() {
   if (res.success) {
     const newUser = { id: res.id, name };
     state.users.push(newUser);
+    localStorage.setItem('ct_users', JSON.stringify(state.users));
     state.currentUser = newUser;
     state.newPinBuffer = '';
     document.getElementById('new-name').value = '';
