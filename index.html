@@ -687,6 +687,7 @@ function pinCancel() {
 async function submitPin() {
   const res = await api('verifyPin', { userId: state.currentUser.id, pin: state.pinBuffer });
   if (res.success) {
+    state.stats = null;
     showScreen('screen-dashboard');
   } else {
     document.getElementById('pin-error').textContent = 'Incorrect PIN — try again';
@@ -983,6 +984,7 @@ Ask a colleague or the person who set this up.`;
 function logout() {
   state.currentUser = null;
   state.pinBuffer = '';
+  state.stats = null;
   showScreen('screen-home');
 }
 
