@@ -557,7 +557,8 @@
       <div class="stepper-unit" style="margin-bottom:14px">cups</div>
       <div id="visitor-cost" style="text-align:center; font-family:var(--font-serif); font-size:22px; color:var(--gold)">—</div>
     </div>
-    <div id="visitor-payment-options"></div>
+    <button class="btn primary" onclick="confirmVisitor()">Confirm →</button>
+    <div id="visitor-payment-options" style="display:none"></div>
     <button class="btn ghost" onclick="showScreen('screen-home')">← Back</button>
   </div>
 
@@ -633,8 +634,15 @@ function showScreen(id) {
 }
 
 // ── User list ────────────────────────────────────────────────
-function renderUserList() {
+async function renderUserList() {
   const c = document.getElementById('user-list-container');
+  c.innerHTML = '<div class="loader">Loading…</div>';
+  try {
+    state.users = await api('getUsers');
+  } catch(e) {
+    c.innerHTML = '<div class="loader">Could not load users</div>';
+    return;
+  }
   if (!state.users.length) {
     c.innerHTML = '<div class="loader">No users yet</div>';
     return;
@@ -900,6 +908,7 @@ function renderVisitor() {
   updateVisitorCost();
   const s = state.settings;
   const opts = document.getElementById('visitor-payment-options');
+  opts.style.display = 'none';
   opts.innerHTML = '';
   if (s.flikAccount) {
     opts.innerHTML += `
@@ -915,6 +924,10 @@ function renderVisitor() {
         <div><div class="payment-name">Pay via Revolut</div><div class="payment-handle">${s.revAccount}</div></div>
       </div>`;
   }
+}
+
+function confirmVisitor() {
+  document.getElementById('visitor-payment-options').style.display = 'block';
 }
 
 function updateVisitorCost() {
