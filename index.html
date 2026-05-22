@@ -466,7 +466,7 @@
         </div>
       </button>
       <button class="action-btn" onclick="showAction('beans')">
-        <div class="action-icon">🫘</div>
+        <div class="action-icon">🤎</div>
         <div class="action-text">
           <div class="action-title">Brought beans</div>
           <div class="action-sub">Add to the shared stock</div>
@@ -833,11 +833,11 @@ function renderMachineTab(data) {
     </div>
     <div class="machine-row">
       <span class="machine-row-label">Beans brought</span>
-      <span class="machine-row-val">${m.totalBroughtKg.toFixed(2)} kg</span>
+      <span class="machine-row-val">${m.totalBroughtKg.toFixed(3)} kg</span>
     </div>
     <div class="machine-row">
       <span class="machine-row-label">Beans used</span>
-      <span class="machine-row-val">${m.totalUsedKg.toFixed(2)} kg</span>
+      <span class="machine-row-val">${m.totalUsedKg.toFixed(3)} kg</span>
     </div>
     <div class="machine-row">
       <span class="machine-row-label">Estimated stock</span>
@@ -896,7 +896,7 @@ async function submitBeans() {
     quantity: state.steppers.beans
   });
   if (res.success) {
-    showToast(`${state.steppers.beans} kg logged 🫘`);
+    showToast(`${state.steppers.beans} kg logged 🤎`);
     showScreen('screen-dashboard');
   } else {
     showToast('Error: ' + (res.error || 'unknown'));
@@ -951,7 +951,7 @@ async function renderInfo() {
     <div class="machine-row">
       <span class="machine-row-label">Estimated stock</span>
       <span class="machine-row-val" style="color:${m.stockRemainingKg < 0.1 ? 'var(--red)' : 'var(--green)'}">
-        ~${m.stockRemainingKg.toFixed(2)} kg remaining
+        ~${m.stockRemainingKg.toFixed(3)} kg remaining
       </span>
     </div>
   `;
