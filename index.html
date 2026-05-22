@@ -904,25 +904,23 @@ async function submitBeans() {
 }
 
 // ── Visitor ──────────────────────────────────────────────────
-function renderVisitor() {
-  updateVisitorCost();
-  const s = state.settings;
+async function renderVisitor() {
   const opts = document.getElementById('visitor-payment-options');
   opts.style.display = 'none';
   opts.innerHTML = '';
-  if (s.flikAccount) {
-    opts.innerHTML += `
-      <div class="payment-option">
-        <div class="payment-icon">🇸🇮</div>
-        <div><div class="payment-name">Pay via Flik</div><div class="payment-handle">${s.flikAccount}</div></div>
-      </div>`;
-  }
+  try {
+    state.settings = await api('getSettings');
+  } catch(e) {}
+  updateVisitorCost();
+  const s = state.settings;
   if (s.revAccount) {
-    opts.innerHTML += `
-      <div class="payment-option">
-        <div class="payment-icon">💜</div>
-        <div><div class="payment-name">Pay via Revolut</div><div class="payment-handle">${s.revAccount}</div></div>
-      </div>`;
+    const handle = s.revAccount.replace('@', '');
+    opts.innerHTML = `
+      <a href="https://revolut.me/${handle}" target="_blank" rel="noopener" class="btn primary" style="text-decoration:none">
+        Pay via Revolut.me
+      </a>`;
+  } else {
+    opts.innerHTML = `<div class="card" style="text-align:center;color:var(--cream-dim);font-size:13px">No payment account configured.<br>Ask a colleague for details.</div>`;
   }
 }
 
