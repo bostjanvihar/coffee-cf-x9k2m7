@@ -628,7 +628,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 
   if (id === 'screen-users')    renderUserList();
-  if (id === 'screen-dashboard') { switchTab('mine'); loadStats(); }
+  if (id === 'screen-dashboard') { switchTab('mine'); if (!state.stats) loadStats(); }
   if (id === 'screen-visitor')  renderVisitor();
   if (id === 'screen-info')     renderInfo();
 }
@@ -636,12 +636,14 @@ function showScreen(id) {
 // ── User list ────────────────────────────────────────────────
 async function renderUserList() {
   const c = document.getElementById('user-list-container');
-  c.innerHTML = '<div class="loader">Loading…</div>';
-  try {
-    state.users = await api('getUsers');
-  } catch(e) {
-    c.innerHTML = '<div class="loader">Could not load users</div>';
-    return;
+  if (!state.users.length) {
+    c.innerHTML = '<div class="loader">Loading…</div>';
+    try {
+      state.users = await api('getUsers');
+    } catch(e) {
+      c.innerHTML = '<div class="loader">Could not load users</div>';
+      return;
+    }
   }
   if (!state.users.length) {
     c.innerHTML = '<div class="loader">No users yet</div>';
@@ -880,6 +882,7 @@ async function submitCoffee() {
     quantity: state.steppers.cups
   });
   if (res.success) {
+    state.stats = null; // invalidate so dashboard reloads fresh data
     showToast(`${state.steppers.cups} cup${state.steppers.cups>1?'s':''} logged ☕`);
     showScreen('screen-dashboard');
   } else {
@@ -896,6 +899,7 @@ async function submitBeans() {
     quantity: state.steppers.beans
   });
   if (res.success) {
+    state.stats = null; // invalidate so dashboard reloads fresh data
     showToast(`${state.steppers.beans} kg logged 🤎`);
     showScreen('screen-dashboard');
   } else {
@@ -908,9 +912,9 @@ async function renderVisitor() {
   const opts = document.getElementById('visitor-payment-options');
   opts.style.display = 'none';
   opts.innerHTML = '';
-  try {
-    state.settings = await api('getSettings');
-  } catch(e) {}
+  if (!state.settings.eurPerCup) {
+    try { state.settings = await api('getSettings'); } catch(e) {}
+  }
   updateVisitorCost();
   const s = state.settings;
   if (s.revAccount) {
