@@ -914,9 +914,9 @@ async function renderVisitor() {
   updateVisitorCost();
   const s = state.settings;
   if (s.revAccount) {
-    const handle = s.revAccount.replace('@', '');
+    const revUrl = s.revAccount.startsWith('http') ? s.revAccount : `https://revolut.me/${s.revAccount.replace('@', '')}`;
     opts.innerHTML = `
-      <a href="https://revolut.me/${handle}" target="_blank" rel="noopener" class="btn primary" style="text-decoration:none">
+      <a href="${revUrl}" target="_blank" rel="noopener" class="btn primary" style="text-decoration:none">
         Pay via Revolut.me
       </a>`;
   } else {
